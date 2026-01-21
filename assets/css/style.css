@@ -1,0 +1,163 @@
+/* SIKDORAK POS - ESTILOS PREMIUM 
+   Versión: Final Unificada
+*/
+
+/* --- RESET & CONFIGURACIÓN BASE --- */
+* { 
+    -webkit-tap-highlight-color: transparent; 
+    outline: none; 
+    box-sizing: border-box;
+}
+
+body {
+    -webkit-user-select: none;
+    user-select: none;
+    overflow-x: hidden;
+}
+
+/* Ocultar scrollbars en contenedores pero mantener funcionalidad */
+#mesasContainer::-webkit-scrollbar, 
+#pedidoLista::-webkit-scrollbar,
+#menu::-webkit-scrollbar { 
+    display: none; 
+}
+
+#mesasContainer, 
+#pedidoLista, 
+#menu { 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+}
+
+/* --- ANIMACIONES DE RETROALIMENTACIÓN (PLANTILLAS) --- */
+@keyframes flashGreen {
+    0% { background-color: #dcfce7; transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { background-color: white; transform: scale(1); }
+}
+
+@keyframes flashRed {
+    from { background-color: #fee2e2; }
+    to { background-color: white; }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Clases de animación */
+.flash-add { 
+    animation: flashGreen 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+.flash-remove { 
+    animation: flashRed 0.4s ease-out; 
+}
+
+/* --- SISTEMA DE MESAS --- */
+.mesa-btn {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: white;
+    border: 1px solid #f1f5f9;
+}
+
+/* Estado: Mesa Seleccionada Activa */
+.mesa-activa {
+    background: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.3);
+}
+
+.mesa-activa span { 
+    color: white !important; 
+}
+
+/* Estado: Mesa con pedidos registrados */
+.mesa-ocupada {
+    border: 2px solid #6366f1;
+    background: #f8faff;
+}
+
+.mesa-ocupada span:last-child {
+    color: #4f46e5;
+}
+
+/* --- BOTONES DE CONTROL DE CANTIDAD --- */
+.btn-cant {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #f8fafc;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #64748b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-cant:active {
+    background: #e2e8f0;
+    transform: scale(0.85);
+    color: #4f46e5;
+}
+
+/* --- PANEL MODAL Y OVERLAY --- */
+#panelComanda {
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.08);
+    will-change: transform;
+}
+
+/* Overlay con desenfoque de fondo */
+#overlay {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Curva de movimiento para el panel deslizable */
+.cubic-bezier { 
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1); 
+}
+
+/* --- ESTILOS DE LA CARTA (MENU) --- */
+#menu h3 {
+    animation: fadeInDown 0.5s ease-out forwards;
+}
+
+/* Tarjetas de productos */
+#menu button {
+    transition: all 0.3s ease;
+}
+
+#menu button:active {
+    transform: scale(0.97);
+    background-color: #f8fafc;
+}
+
+/* --- NOTAS Y TEXTAREAS --- */
+textarea#notasGenerales {
+    resize: none;
+    outline: none;
+}
+
+textarea#notasGenerales:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.05);
+}
+
+/* --- RESPONSIVE FIXES --- */
+@media (max-width: 380px) {
+    .mesa-btn {
+        min-width: 85px;
+        h: 85px;
+    }
+    
+    #panelComanda {
+        padding: 1.5rem;
+    }
+}

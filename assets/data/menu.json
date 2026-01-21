@@ -1,0 +1,70 @@
+{
+  "categorias": [
+    {
+      "titulo": "Especialidad – Pollo Frito",
+      "productos": [
+        { "nombre": "Prinkle Red 🟠", "precio": 14500, "descripcion": "Pollo frito con polvo de ají coreano (medio picante) y queso parmesano. Incluye arroz." },
+        { "nombre": "Prinkle Black ⚪", "precio": 14500, "descripcion": "Pollo frito con pimienta y sal coreana (dulce) y queso parmesano. Incluye arroz." },
+        { "nombre": "Dakgangjeong (Pollo Coreano) 🍗", "precio": 13000, "descripcion": "Crujiente con salsa a elección: Tradicional, Soya Dulce, Naranja o Bomba. Incluye arroz." }
+      ]
+    },
+    {
+      "titulo": "Para Compartir – Mandu 🥟",
+      "productos": [
+        { "nombre": "Mandu Frito 🟠", "precio": 8900, "descripcion": "Rellenas con cerdo, cebollín y fideos de camote." },
+        { "nombre": "Mandu Vapor BIG ⚪", "precio": 11200, "descripcion": "5 unidades grandes de cerdo, repollo, cebollín y tofu." },
+        { "nombre": "Mandu Vapor MINI ⚪", "precio": 9900, "descripcion": "8 unidades pequeñas de cerdo, repollo, cebollín y tofu." },
+        { "nombre": "Mandu Veg 🟢", "precio": 8900, "descripcion": "Carne de soya, cebollín y fideos de camote." },
+        { "nombre": "Mandu Vapor MIXTO 🟢", "precio": 9600, "descripcion": "Combinación cerdo y veg (hasta 8 unidades)." }
+      ]
+    },
+    {
+      "titulo": "Korean Soul Food – Sopas 🥣",
+      "productos": [
+        { "nombre": "Sulongtang ⚪", "precio": 13900, "descripcion": "Sopa milenaria de res cremosa (huesos hervidos 24h)." },
+        { "nombre": "Miyokguk ⚪🟢", "precio": 13900, "descripcion": "Sopa simbólica de algas (saludable)." },
+        { "nombre": "Gamyatang 🟠", "precio": 13900, "descripcion": "Estofado rústico de cerdo deshuesado, patatas y col china." },
+        { "nombre": "Galbi Tang ⚪ (SOLD OUT)", "precio": 15000, "descripcion": "Sopa de costilla de vacuno, nutritiva y reconfortante." },
+        { "nombre": "Yukejang 🔴", "precio": 13900, "descripcion": "Sopa tradicional picante de pechuga de res." },
+        { "nombre": "Hejang-guk (2 Pers) 🟠", "precio": 22000, "descripcion": "Caldo de carne y hueso de cerdo. Ideal para la resaca." },
+        { "nombre": "Kimchizzige 🔴", "precio": 12000, "descripcion": "Sopa de kimchi, panceta de cerdo y tofu." },
+        { "nombre": "Dwenjangzzie 🟠", "precio": 12000, "descripcion": "Sopa de poroto de soya fermentada, vacuno y tofu." }
+      ]
+    },
+    {
+      "titulo": "Sabor Tradicional – Planchas",
+      "productos": [
+        { "nombre": "Bulgogi ⚪", "precio": 9900, "descripcion": "Vacuno marinado en soya especial por 24h con verduras." },
+        { "nombre": "Aji Bulgogi 🟠🟠", "precio": 9900, "descripcion": "Vacuno marinado en salsa de ají coreano." },
+        { "nombre": "Yapche ⚪", "precio": 9900, "descripcion": "Fideos de camote con verduras y carne bulgogi." },
+        { "nombre": "Yeyuk 🟠🟠", "precio": 10500, "descripcion": "Cerdo marinado en salsa de ají coreano." }
+      ]
+    },
+    {
+      "titulo": "Sabor Típico – Arroz 🍚",
+      "productos": [
+        { "nombre": "Bibimbap Bulgogi (Carne)", "precio": 9900, "descripcion": "Arroz, vegetales, huevo frito. Elige salsa: Ají o Soya." },
+        { "nombre": "Bibimbap Tofu 🟢", "precio": 9900, "descripcion": "Arroz, vegetales, tofu y huevo frito. Elige salsa: Ají o Soya." }
+      ]
+    },
+    {
+      "titulo": "Ramyeon y Tradición 🍜",
+      "productos": [
+        { "nombre": "Ramyeon Tradicional 🟠🔴", "precio": 7900, "descripcion": "Caldo de res, láminas de vacuno y huevo Sikdorak." },
+        { "nombre": "Ramyeon Vegetariano 🟢🟠", "precio": 8500, "descripcion": "Caldo vegetal, tofu, vegetales y huevo Sikdorak." },
+        { "nombre": "Jjajangmyon ⚪🟢", "precio": 10200, "descripcion": "Fideos de trigo con salsa espesa de frijol negro." }
+      ]
+    },
+    {
+      "titulo": "Bunsik y Platillos Popular",
+      "productos": [
+        { "nombre": "Tteokbokki Clásico 🔘🟠🔴", "precio": 7600, "descripcion": "Masitas de arroz, tortilla de pescado y huevo duro." },
+        { "nombre": "Rose Tteokbokki 🔘🟠🔴", "precio": 7900, "descripcion": "Masitas rellenas de queso en salsa de leche agridulce." },
+        { "nombre": "Cheese Tteokbokki 🔘🟠🔴", "precio": 7900, "descripcion": "Masitas rellenas de queso, salsa agridulce picante o sin picante." },
+        { "nombre": "Chibap (Pollo Frito) 🔘", "precio": 7900, "descripcion": "Arroz con pollo frito, fideos de camote y ensalada." },
+        { "nombre": "Embap (Mandu Frito) 🔘", "precio": 7900, "descripcion": "Arroz con mandu frito, fideos de camote y ensalada." },
+        { "nombre": "Kimmari 🔘", "precio": 7200, "descripcion": "Rollos de alga frita rellenos con fideos de camote." }
+      ]
+    }
+  ]
+}
