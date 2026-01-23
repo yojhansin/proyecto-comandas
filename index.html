@@ -9,6 +9,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
   <link rel="stylesheet" href="assets/css/style.css">
   <script>
     tailwind.config = {
@@ -62,12 +63,22 @@
   <div id="overlay" onclick="toggleComanda()" class="fixed inset-0 bg-slate-900/40 z-[65] hidden backdrop-blur-md transition-opacity duration-300"></div>
 
   <aside id="panelComanda" class="fixed inset-x-0 bottom-0 z-[70] bg-white rounded-t-[3rem] p-8 max-w-lg mx-auto transform translate-y-full transition-transform duration-500 cubic-bezier(0.32, 0.72, 0, 1)">
-    <div onclick="toggleComanda()" class="w-16 h-1.5 bg-slate-100 rounded-full mx-auto mb-8 cursor-pointer hover:bg-slate-200 transition-colors"></div>
+    
+    <div id="dragHandle" class="w-full py-4 -mt-4 cursor-grab active:cursor-grabbing">
+      <div class="w-16 h-1.5 bg-slate-200 rounded-full mx-auto transition-colors hover:bg-slate-300"></div>
+    </div>
     
     <div class="flex justify-between items-start mb-8">
       <div>
-        <h3 id="pedidoMesaTitulo" class="font-extrabold text-3xl text-slate-900 tracking-tighter">Mesa --</h3>
-        <p id="detallesServicio" class="text-xs text-indigo-500 font-bold uppercase tracking-widest mt-1 opacity-70"></p>
+        <div class="flex items-center gap-2 mb-1">
+          <h3 id="pedidoMesaTitulo" class="font-extrabold text-3xl text-slate-900 tracking-tighter">Mesa --</h3>
+          <button onclick="toggleComanda()" class="ml-2 bg-slate-100 text-slate-400 p-2 rounded-full hover:bg-slate-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <p id="detallesServicio" class="text-xs text-indigo-500 font-bold uppercase tracking-widest opacity-70"></p>
       </div>
       <div class="text-right">
         <p class="text-[10px] font-black text-slate-300 uppercase">Total Cuenta</p>
