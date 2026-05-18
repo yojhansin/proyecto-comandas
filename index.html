@@ -1,1072 +1,171 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Sikdorak · Garzón</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-:root {
-  --bg:        #F7F6F2;
-  --surface:   #FFFFFF;
-  --surface2:  #F0EFE9;
-  --border:    #E8E6DF;
-  --text:      #1A1916;
-  --muted:     #8C8A83;
-  --gold:      #C9A84C;
-  --gold-lt:   #F5EDD6;
-  --red:       #E63946;
-  --orange:    #F4845F;
-  --orange-lt: #FEF0EB;
-  --blue:      #3A86FF;
-  --blue-lt:   #EAF1FF;
-  --green:     #2D9B6F;
-  --green-lt:  #E6F5EF;
-  --r:         14px;
-  --r-lg:      22px;
-  --r-xl:      32px;
-  --shadow:    0 2px 12px rgba(0,0,0,.07);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,.13);
-}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Sikdorak | Premium POS</title>
+    
+    <!-- Google Fonts: Inter para modernidad y Playfair para un toque de lujo -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        premium: {
+                            gold: '#D4AF37',
+                            dark: '#0F172A',
+                            accent: '#6366F1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;outline:none;}
-html,body{height:100%;overscroll-behavior:none;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-user-select:none;user-select:none;overflow-x:hidden;}
+    <style type="text/tailwindcss">
+        @layer base {
+            body { @apply bg-[#F1F5F9] text-slate-900 overflow-x-hidden; }
+        }
 
-::-webkit-scrollbar{width:3px;height:3px;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+        /* Glassmorphism Puro */
+        .glass-card {
+            @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+        }
 
-/* HEADER */
-.header{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:16px 20px 14px;
-  background:var(--bg);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.logo{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-.5px;color:var(--text);}
-.logo em{font-style:italic;color:var(--gold);}
-.header-right{display:flex;align-items:center;gap:10px;}
-.live-dot{
-  display:flex;align-items:center;gap:6px;
-  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--muted);background:var(--surface);border:1px solid var(--border);
-  border-radius:99px;padding:5px 12px;
-}
-.live-dot::before{
-  content:'';width:7px;height:7px;border-radius:50%;
-  background:#2D9B6F;box-shadow:0 0 0 3px rgba(45,155,111,.2);
-  animation:pulse 2s infinite;
-}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(45,155,111,.2);}50%{box-shadow:0 0 0 6px rgba(45,155,111,.08);}}
+        /* Animación para el panel de comanda */
+        #panelComanda {
+            transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+        }
 
-.garzon-chip{
-  display:flex;align-items:center;gap:7px;
-  background:var(--text);color:#fff;
-  border-radius:99px;padding:5px 14px 5px 8px;
-  font-size:12px;font-weight:600;cursor:pointer;border:none;
-}
-.garzon-avatar{
-  width:22px;height:22px;border-radius:50%;
-  background:var(--gold);color:var(--text);
-  font-size:10px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-}
+        /* Scrollbars elegantes */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-/* MAIN */
-.main{padding-top:72px;padding-bottom:120px;min-height:100vh;}
+        /* Estados de Mesas Premium */
+        .mesa-vacia { @apply glass-card text-slate-400 opacity-60; }
+        .mesa-ocupada { @apply bg-premium-dark text-white shadow-2xl shadow-slate-400 scale-105 z-10; }
+        .mesa-preparando { @apply bg-amber-500 text-white shadow-lg shadow-amber-100 scale-105; }
+        .mesa-listo { @apply bg-indigo-600 text-white shadow-lg shadow-indigo-100 scale-105; }
 
-.section-label{
-  font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--muted);padding:0 20px;margin-bottom:12px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-
-/* MESAS */
-.mesas-wrap{padding:22px 20px 0;}
-.mesas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
-.mesa-btn{
-  aspect-ratio:1;border-radius:var(--r);
-  border:1.5px solid var(--border);background:var(--surface);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
-  position:relative;overflow:hidden;
-}
-.mesa-btn .m-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
-.mesa-btn .m-num{font-family:'DM Serif Display',serif;font-size:24px;line-height:1;color:var(--text);}
-.mesa-btn .m-sub{font-size:9px;color:var(--muted);margin-top:3px;font-weight:500;}
-.mesa-btn.libre{opacity:.7;}
-.mesa-btn.libre:active{transform:scale(.94);}
-.mesa-btn.ocupada{background:var(--text);border-color:var(--text);transform:scale(1.04);z-index:2;box-shadow:0 6px 20px rgba(26,25,22,.25);}
-.mesa-btn.ocupada .m-label,.mesa-btn.ocupada .m-num,.mesa-btn.ocupada .m-sub{color:#fff;}
-.mesa-btn.ocupada .m-label{color:rgba(255,255,255,.5);}
-.mesa-btn.preparando{background:var(--orange);border-color:var(--orange);transform:scale(1.04);z-index:2;box-shadow:0 6px 20px rgba(244,132,95,.35);}
-.mesa-btn.preparando .m-label,.mesa-btn.preparando .m-num,.mesa-btn.preparando .m-sub{color:#fff;}
-.mesa-btn.preparando .m-label{color:rgba(255,255,255,.6);}
-.mesa-btn.listo{background:var(--blue);border-color:var(--blue);transform:scale(1.04);z-index:2;box-shadow:0 6px 20px rgba(58,134,255,.35);}
-.mesa-btn.listo .m-label,.mesa-btn.listo .m-num,.mesa-btn.listo .m-sub{color:#fff;}
-.mesa-btn.listo .m-label{color:rgba(255,255,255,.6);}
-.estado-ring{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 2s infinite;display:none;}
-
-/* ACTIVAS */
-.activas-wrap{padding:20px 20px 0;display:none;}
-.activas-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
-.activa-chip{
-  flex-shrink:0;padding:8px 16px;border-radius:99px;
-  font-size:11px;font-weight:700;letter-spacing:.05em;
-  border:1.5px solid var(--border);background:var(--surface);color:var(--muted);
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
-.activa-chip.activo{background:var(--text);border-color:var(--text);color:#fff;}
-.chip-estado{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;}
-.chip-estado.preparando{background:var(--orange);}
-.chip-estado.listo{background:var(--blue);}
-.chip-estado.ocupada{background:var(--green);}
-
-/* MENU */
-.menu-wrap{padding:24px 20px 0;}
-.cat-block{margin-bottom:8px;}
-.cat-header{
-  width:100%;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px 16px;
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;transition:background .15s;text-align:left;
-}
-.cat-header:active{background:var(--surface2);}
-.cat-name{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);}
-.cat-count{font-size:11px;color:var(--muted);margin-left:auto;margin-right:12px;}
-.cat-arrow{width:18px;height:18px;display:flex;align-items:center;justify-content:center;transition:transform .3s;color:var(--muted);flex-shrink:0;}
-.cat-header.open .cat-arrow{transform:rotate(180deg);}
-.cat-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(0,1,0,1);}
-.cat-body.open{max-height:3000px;transition:max-height .6s ease-in-out;}
-.cat-inner{padding:8px 0 4px;display:flex;flex-direction:column;gap:6px;}
-
-.prod-card{
-  width:100%;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px 16px;
-  display:flex;align-items:center;gap:12px;
-  cursor:pointer;text-align:left;transition:all .18s;
-  position:relative;overflow:hidden;
-}
-.prod-card:active{transform:scale(.98);}
-.prod-info{flex:1;min-width:0;}
-.prod-nombre{font-size:14px;font-weight:600;color:var(--text);line-height:1.2;}
-.prod-precio{font-family:'DM Serif Display',serif;font-size:17px;font-style:italic;color:var(--gold);margin-top:3px;}
-.add-btn{
-  width:36px;height:36px;border-radius:10px;background:var(--surface2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;font-weight:300;color:var(--muted);flex-shrink:0;transition:all .2s;
-}
-.prod-card.added .add-btn{background:var(--text);color:#fff;transform:scale(1.1);}
-.prod-card::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
-  transform:translateX(-100%);pointer-events:none;
-}
-.prod-card.flash::after{animation:shimmer .5s ease-out;}
-@keyframes shimmer{to{transform:translateX(100%);}}
-
-/* FAB */
-.fab-wrap{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  width:calc(100% - 40px);max-width:400px;z-index:200;display:none;
-}
-.fab{
-  width:100%;background:var(--text);border-radius:var(--r-xl);
-  padding:14px 18px;display:flex;align-items:center;gap:14px;
-  box-shadow:var(--shadow-lg);cursor:pointer;transition:transform .18s;border:none;
-}
-.fab:active{transform:scale(.97);}
-.fab-icon{
-  width:46px;height:46px;border-radius:16px;background:rgba(255,255,255,.1);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;
-}
-.fab-icon svg{width:22px;height:22px;stroke:#fff;}
-.fab-badge{
-  position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;
-  background:var(--gold);color:var(--text);font-size:10px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;border:2px solid var(--text);
-}
-.fab-info{flex:1;}
-.fab-tag{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-.fab-mesa{font-size:13px;font-weight:700;color:#fff;margin-top:1px;}
-.fab-total{font-family:'DM Serif Display',serif;font-size:26px;font-style:italic;color:#fff;letter-spacing:-.5px;}
-
-/* OVERLAY */
-.overlay{
-  position:fixed;inset:0;z-index:300;
-  background:rgba(26,25,22,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-  opacity:0;pointer-events:none;transition:opacity .35s;
-}
-.overlay.visible{opacity:1;pointer-events:all;}
-
-/* DRAWER */
-.drawer{
-  position:fixed;inset-y:0;right:0;z-index:400;
-  width:100%;max-width:420px;background:var(--surface);
-  display:flex;flex-direction:column;
-  transform:translateX(100%);transition:transform .5s cubic-bezier(.32,.72,0,1);
-  box-shadow:var(--shadow-lg);
-}
-.drawer.open{transform:translateX(0);}
-.drawer-head{
-  padding:24px 22px 20px;border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;
-}
-.drawer-pre{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-.drawer-head h2{font-family:'DM Serif Display',serif;font-size:42px;font-style:italic;line-height:1;color:var(--text);}
-.drawer-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-.meta-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:99px;}
-.meta-tag.tipo{background:var(--surface2);color:var(--muted);}
-.meta-tag.garzon{background:var(--gold-lt);color:#8a6a1a;}
-.drawer-close{
-  width:36px;height:36px;border-radius:10px;background:var(--surface2);border:none;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
-}
-.drawer-close svg{width:18px;height:18px;stroke:var(--text);}
-
-.drawer-body{flex:1;overflow-y:auto;padding:20px 22px;}
-.cart-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;}
-.cart-empty .ce-icon{font-size:40px;margin-bottom:12px;opacity:.3;}
-
-.cart-item{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 0;border-bottom:1px solid var(--border);
-  animation:slideIn .3s ease-out;
-}
-@keyframes slideIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
-.cart-item:last-child{border-bottom:none;}
-.ci-info{flex:1;min-width:0;}
-.ci-nombre{font-size:14px;font-weight:600;color:var(--text);line-height:1.2;}
-.ci-precio{font-family:'DM Serif Display',serif;font-size:16px;font-style:italic;color:var(--gold);margin-top:3px;}
-.ci-nota{font-size:11px;color:var(--orange);font-style:italic;margin-top:4px;background:var(--orange-lt);padding:3px 8px;border-radius:6px;display:inline-block;}
-.ci-nota-btn{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:underline;background:none;border:none;cursor:pointer;margin-left:8px;}
-.qty-ctrl{display:flex;align-items:center;background:var(--surface2);border-radius:12px;border:1px solid var(--border);overflow:hidden;flex-shrink:0;}
-.qty-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:300;color:var(--text);background:none;border:none;cursor:pointer;transition:background .15s;}
-.qty-btn:active{background:var(--border);}
-.qty-num{font-size:14px;font-weight:700;min-width:24px;text-align:center;}
-
-.notes-section{margin-top:20px;}
-.notes-label{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-.notes-textarea{
-  width:100%;min-height:80px;background:var(--surface2);
-  border:1.5px solid var(--border);border-radius:var(--r);
-  padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
-  resize:none;transition:border-color .2s;
-}
-.notes-textarea:focus{border-color:var(--gold);}
-.notes-textarea::placeholder{color:var(--muted);}
-
-.drawer-foot{padding:18px 22px;background:var(--bg);border-top:1px solid var(--border);flex-shrink:0;}
-.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.total-label{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
-.total-val{font-family:'DM Serif Display',serif;font-size:38px;font-style:italic;color:var(--text);line-height:1;}
-.send-btn{
-  width:100%;background:var(--text);color:#fff;border:none;border-radius:var(--r-lg);
-  padding:18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
-  letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-}
-.send-btn:active{transform:scale(.98);}
-.send-btn:disabled{opacity:.5;pointer-events:none;}
-.send-btn svg{width:18px;height:18px;flex-shrink:0;}
-.danger-action{margin-top:14px;text-align:center;}
-.danger-btn{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-
-/* MODAL ABRIR MESA */
-.modal-bg{
-  position:fixed;inset:0;z-index:500;background:rgba(26,25,22,.6);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
-.modal-bg.visible{opacity:1;pointer-events:all;}
-.modal-card{
-  width:100%;max-width:480px;background:var(--surface);
-  border-radius:var(--r-xl) var(--r-xl) 0 0;padding:28px 24px 40px;
-  transform:translateY(100%);transition:transform .45s cubic-bezier(.32,.72,0,1);
-}
-.modal-bg.visible .modal-card{transform:translateY(0);}
-.modal-handle{width:40px;height:4px;border-radius:99px;background:var(--border);margin:0 auto 24px;}
-.modal-title{font-family:'DM Serif Display',serif;font-size:32px;font-style:italic;color:var(--text);margin-bottom:6px;}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:28px;}
-.field{margin-bottom:16px;}
-.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.field input{
-  width:100%;background:var(--surface2);border:1.5px solid var(--border);
-  border-radius:var(--r);padding:14px 16px;font-family:'DM Sans',sans-serif;
-  font-size:15px;color:var(--text);transition:border-color .2s;
-}
-.field input:focus{border-color:var(--gold);}
-.field input::placeholder{color:var(--muted);}
-.tipo-btns{display:flex;gap:8px;}
-.tipo-opt{
-  flex:1;padding:12px;border-radius:var(--r);border:1.5px solid var(--border);
-  background:var(--surface2);font-size:13px;font-weight:600;color:var(--muted);
-  cursor:pointer;text-align:center;transition:all .2s;
-}
-.tipo-opt.sel{border-color:var(--text);background:var(--text);color:#fff;}
-.modal-confirm{
-  width:100%;margin-top:24px;background:var(--text);color:#fff;border:none;
-  border-radius:var(--r-lg);padding:18px;font-family:'DM Sans',sans-serif;
-  font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  cursor:pointer;transition:transform .18s;
-}
-.modal-confirm:active{transform:scale(.98);}
-
-/* TICKET */
-#ticket-print{display:none;}
-@media print{
-  @page{margin:0;size:72mm auto;}
-  html,body{background:#fff !important;margin:0;padding:0;}
-  header,.main,.fab-wrap,.overlay,.drawer,.modal-bg{display:none !important;}
-  #ticket-print{display:block !important;width:72mm;padding:8px 10px;font-family:monospace;color:#000;font-size:12pt;}
-  .tk-brand{text-align:center;font-size:18pt;font-weight:900;letter-spacing:-1px;margin-bottom:2px;}
-  .tk-sub{text-align:center;font-size:9pt;font-weight:bold;margin-bottom:10px;}
-  .tk-divider{border:none;border-top:1px dashed #000;margin:6px 0;}
-  .tk-row{display:flex;justify-content:space-between;font-size:10pt;margin-bottom:4px;}
-  .tk-bold{font-size:12pt;font-weight:bold;}
-  .tk-item{padding:6px 0;border-bottom:1px dashed #ccc;}
-  .tk-item-name{font-size:13pt;font-weight:bold;}
-  .tk-item-nota{font-size:10pt;font-style:italic;}
-  .tk-nota-gral{font-size:10pt;font-style:italic;margin-top:6px;}
-  .tk-space{height:60px;}
-}
-
-/* SWEETALERT */
-.swal2-popup{border-radius:24px !important;font-family:'DM Sans',sans-serif !important;padding:28px !important;}
-.swal2-title{font-family:'DM Serif Display',serif !important;font-size:26px !important;font-style:italic !important;}
-.swal2-confirm{border-radius:14px !important;font-weight:700 !important;letter-spacing:.05em !important;font-family:'DM Sans',sans-serif !important;}
-.swal2-cancel{border-radius:14px !important;font-weight:700 !important;font-family:'DM Sans',sans-serif !important;}
-
-/* TOAST */
-.toast{
-  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
-  z-index:600;background:var(--text);color:#fff;
-  padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;
-  box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:all .3s;
-  white-space:nowrap;display:flex;align-items:center;gap:8px;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast-icon{font-size:14px;}
-</style>
+        /* Estilo para los botones de cantidad */
+        .qty-btn {
+            @apply w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600 transition-all active:scale-90;
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-<!-- HEADER -->
-<header class="header">
-  <div class="logo">Sik<em>dorak</em></div>
-  <div class="header-right">
-    <div class="live-dot">Live</div>
-    <button class="garzon-chip" onclick="cambiarGarzon()">
-      <div class="garzon-avatar" id="garzonAvatar">G</div>
-      <span id="garzonNombre">Garzón</span>
-    </button>
-  </div>
-</header>
-
-<!-- MAIN -->
-<main class="main">
-
-  <!-- Mesas -->
-  <div class="mesas-wrap">
-    <div class="section-label">
-      <span>Salón Principal</span>
-      <span id="countMesas">20 mesas</span>
-    </div>
-    <div class="mesas-grid" id="mesasGrid"></div>
-  </div>
-
-  <!-- Mis mesas activas -->
-  <div class="activas-wrap" id="activasWrap">
-    <div class="section-label" style="margin-bottom:10px;">
-      <span>Mis atenciones activas</span>
-    </div>
-    <div class="activas-scroll" id="activasScroll"></div>
-  </div>
-
-  <!-- Carta -->
-  <div class="menu-wrap">
-    <div class="section-label" style="margin-bottom:14px;">
-      <span>Carta</span>
-      <span id="cartaStatus">Cargando…</span>
-    </div>
-    <div id="menuContainer"></div>
-  </div>
-
-</main>
-
-<!-- FAB -->
-<div class="fab-wrap" id="fabWrap">
-  <button class="fab" onclick="openDrawer()">
-    <div class="fab-icon">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-      </svg>
-      <div class="fab-badge" id="fabBadge">0</div>
-    </div>
-    <div class="fab-info">
-      <div class="fab-tag">Revisar pedido</div>
-      <div class="fab-mesa" id="fabMesa">Mesa —</div>
-    </div>
-    <div class="fab-total" id="fabTotal">$0</div>
-  </button>
-</div>
-
-<!-- OVERLAY -->
-<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
-
-<!-- DRAWER -->
-<aside class="drawer" id="drawer">
-  <div class="drawer-head">
-    <div>
-      <div class="drawer-pre">Comanda activa</div>
-      <h2 id="drawerTitle">Mesa —</h2>
-      <div class="drawer-meta" id="drawerMeta"></div>
-    </div>
-    <button class="drawer-close" onclick="closeDrawer()">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-
-  <div class="drawer-body">
-    <div class="cart-empty" id="cartEmpty">
-      <div class="ce-icon">🍽</div>
-      <div>Agrega platos desde la carta</div>
-    </div>
-    <ul id="cartList" style="list-style:none;display:none;"></ul>
-    <div class="notes-section">
-      <div class="notes-label">Nota para cocina</div>
-      <textarea class="notes-textarea" id="notaGeneral" placeholder="Ej: Sin gluten, alérgico a nueces…"></textarea>
-    </div>
-  </div>
-
-  <div class="drawer-foot">
-    <div class="total-row">
-      <span class="total-label">Total estimado</span>
-      <span class="total-val" id="drawerTotal">$0</span>
-    </div>
-    <button class="send-btn" id="sendBtn" onclick="enviarACocina()">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-      </svg>
-      Enviar a cocina
-    </button>
-    <div class="danger-action">
-      <button class="danger-btn" onclick="liberarMesa()">Liberar mesa</button>
-    </div>
-  </div>
-</aside>
-
-<!-- MODAL ABRIR MESA -->
-<div class="modal-bg" id="modalBg">
-  <div class="modal-card">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modalTitulo">Mesa 1</div>
-    <div class="modal-sub">Ingresa los datos para abrir esta mesa</div>
-    <div class="field">
-      <label>Nombre del garzón</label>
-      <input type="text" id="inputGarzon" placeholder="Tu nombre"/>
-    </div>
-    <div class="field">
-      <label>Tipo de servicio</label>
-      <div class="tipo-btns">
-        <div class="tipo-opt sel" data-val="Local" onclick="selTipo(this)">🍽 Consumo local</div>
-        <div class="tipo-opt" data-val="Llevar" onclick="selTipo(this)">🥡 Para llevar</div>
-      </div>
-    </div>
-    <button class="modal-confirm" onclick="confirmarApertura()">Abrir mesa</button>
-  </div>
-</div>
-
-<!-- TICKET IMPRESIÓN -->
-<div id="ticket-print">
-  <div class="tk-brand">SIKDORAK</div>
-  <div class="tk-sub">— Comanda de cocina —</div>
-  <hr class="tk-divider"/>
-  <div class="tk-row"><span class="tk-bold" id="tk-mesa">—</span><span id="tk-hora">—</span></div>
-  <div class="tk-row"><span id="tk-garzon">—</span><span id="tk-tipo">—</span></div>
-  <hr class="tk-divider"/>
-  <div id="tk-items"></div>
-  <hr class="tk-divider"/>
-  <div class="tk-nota-gral" id="tk-nota"></div>
-  <div class="tk-space"></div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toastIcon"></span>
-  <span id="toastMsg"></span>
-</div>
-
-<script>
-// CONFIG
-const API_BASE = '../api';
-const API = {
-  mesas:     `${API_BASE}/obtener_mesas.php`,
-  abrirMesa: `${API_BASE}/abrir_mesa.php`,
-  guardar:   `${API_BASE}/guardar_pedido.php`,
-  finalizar: `${API_BASE}/finalizar_mesa.php`,
-  menu:      '../assets/data/menu.json',
-};
-const TOTAL_MESAS   = 20;
-const POLL_INTERVAL = 4000;
-
-// ESTADO
-let garzonNombre  = localStorage.getItem('skd_garzon') || '';
-let mesaActual    = null;
-let mesaPendiente = null;
-let comandas      = JSON.parse(localStorage.getItem('skd_comandas') || '{}');
-
-// INIT
-document.addEventListener('DOMContentLoaded', () => {
-  if (!garzonNombre) pedirNombreGarzon();
-  else actualizarChipGarzon();
-
-  // Restaurar mesaActual si había comandas guardadas
-  const savedKeys = Object.keys(comandas);
-  if (savedKeys.length) mesaActual = parseInt(savedKeys[0]);
-
-  renderMesas();
-  cargarMenu();
-  sincronizarMesas();
-  setInterval(sincronizarMesas, POLL_INTERVAL);
-  renderActivas();
-  actualizarFAB();
-});
-
-// ─── TOAST ────────────────────────────────
-function showToast(msg, tipo = 'info') {
-  const icons = { success: '✓', error: '✕', info: '↑' };
-  document.getElementById('toastIcon').textContent = icons[tipo] || '';
-  document.getElementById('toastMsg').textContent  = msg;
-  const t = document.getElementById('toast');
-  t.className = 'toast show';
-  setTimeout(() => t.className = 'toast', 2800);
-}
-
-// ─── GARZÓN ───────────────────────────────
-function actualizarChipGarzon() {
-  document.getElementById('garzonNombre').textContent = garzonNombre || 'Garzón';
-  document.getElementById('garzonAvatar').textContent = (garzonNombre || 'G')[0].toUpperCase();
-}
-
-function cambiarGarzon() {
-  Swal.fire({
-    title: 'Tu nombre',
-    input: 'text',
-    inputValue: garzonNombre,
-    inputPlaceholder: 'Escribe tu nombre',
-    confirmButtonText: 'Guardar',
-    confirmButtonColor: '#1A1916',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-  }).then(r => {
-    if (r.isConfirmed && r.value) {
-      garzonNombre = r.value.trim();
-      localStorage.setItem('skd_garzon', garzonNombre);
-      actualizarChipGarzon();
-    }
-  });
-}
-
-function pedirNombreGarzon() {
-  Swal.fire({
-    title: '¡Bienvenido!',
-    html: '<p style="color:#8C8A83;font-size:14px;">¿Cómo te llamas?</p>',
-    input: 'text',
-    inputPlaceholder: 'Tu nombre',
-    confirmButtonText: 'Continuar',
-    confirmButtonColor: '#1A1916',
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-  }).then(r => {
-    if (r.isConfirmed && r.value) {
-      garzonNombre = r.value.trim();
-      localStorage.setItem('skd_garzon', garzonNombre);
-      actualizarChipGarzon();
-    }
-  });
-}
-
-// ─── MESAS ────────────────────────────────
-function renderMesas() {
-  const grid = document.getElementById('mesasGrid');
-  grid.innerHTML = '';
-  for (let i = 1; i <= TOTAL_MESAS; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'mesa-btn libre';
-    btn.id = `mesa-${i}`;
-    btn.innerHTML = `
-      <span class="m-label">M</span>
-      <span class="m-num">${i}</span>
-      <span class="m-sub" id="msub-${i}">Libre</span>
-      <span class="estado-ring" id="mring-${i}"></span>
-    `;
-    btn.onclick = () => clickMesa(i);
-    grid.appendChild(btn);
-  }
-}
-
-async function sincronizarMesas() {
-  try {
-    const res  = await fetch(API.mesas);
-    const data = await res.json();
-    data.forEach(m => aplicarEstadoMesa(m.numero, m.estado));
-  } catch(e) { /* silencioso */ }
-}
-
-function aplicarEstadoMesa(num, estado) {
-  const btn  = document.getElementById(`mesa-${num}`);
-  const sub  = document.getElementById(`msub-${num}`);
-  const ring = document.getElementById(`mring-${num}`);
-  if (!btn) return;
-
-  btn.className = 'mesa-btn';
-  ring.style.display = 'none';
-
-  const mapa = {
-    'disponible': ['libre',      'Libre'],
-    'ocupada':    ['ocupada',    'Ocupada'],
-    'preparando': ['preparando', 'Preparando'],
-    'listo':      ['listo',      '¡Listo!'],
-  };
-  const [cls, label] = mapa[estado] || ['libre', 'Libre'];
-  btn.classList.add(cls);
-  sub.textContent = label;
-  if (estado === 'preparando' || estado === 'listo') ring.style.display = 'block';
-}
-
-function clickMesa(num) {
-  // Si el garzón ya tiene esta mesa abierta
-  if (comandas[num]) {
-    mesaActual = num;
-    renderDrawer();
-    openDrawer();
-    return;
-  }
-
-  const btn = document.getElementById(`mesa-${num}`);
-  const ocupada = btn.classList.contains('ocupada') ||
-                  btn.classList.contains('preparando') ||
-                  btn.classList.contains('listo');
-
-  if (ocupada) {
-    showToast(`Mesa ${num} ya está ocupada`, 'error');
-    return;
-  }
-
-  // Abrir modal
-  mesaPendiente = num;
-  document.getElementById('modalTitulo').textContent = `Mesa ${num}`;
-  document.getElementById('inputGarzon').value = garzonNombre;
-  document.querySelectorAll('.tipo-opt').forEach(o => o.classList.remove('sel'));
-  document.querySelector('.tipo-opt[data-val="Local"]').classList.add('sel');
-  document.getElementById('modalBg').classList.add('visible');
-}
-
-// ─── MODAL APERTURA ───────────────────────
-function selTipo(el) {
-  document.querySelectorAll('.tipo-opt').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-async function confirmarApertura() {
-  const nombre = document.getElementById('inputGarzon').value.trim();
-  const tipo   = document.querySelector('.tipo-opt.sel')?.dataset.val || 'Local';
-  const num    = mesaPendiente;
-
-  if (!nombre) { document.getElementById('inputGarzon').focus(); return; }
-
-  if (nombre !== garzonNombre) {
-    garzonNombre = nombre;
-    localStorage.setItem('skd_garzon', garzonNombre);
-    actualizarChipGarzon();
-  }
-
-  try {
-    const res  = await fetch(API.abrirMesa, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ mesa: num }),
-    });
-    const data = await res.json();
-    if (data.status !== 'ok') throw new Error();
-  } catch(e) { /* continúa en modo local si no hay API */ }
-
-  comandas[num] = { garzon: nombre, tipo, items: [], notaGeneral: '' };
-  mesaActual = num;
-  persistir();
-  aplicarEstadoMesa(num, 'ocupada');
-  document.getElementById('modalBg').classList.remove('visible');
-  renderActivas();
-  renderDrawer();
-  openDrawer();
-}
-
-document.getElementById('modalBg').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('visible');
-});
-
-// ─── PERSISTENCIA ─────────────────────────
-function persistir() {
-  localStorage.setItem('skd_comandas', JSON.stringify(comandas));
-}
-
-// ─── CHIPS ACTIVAS ────────────────────────
-function renderActivas() {
-  const wrap   = document.getElementById('activasWrap');
-  const scroll = document.getElementById('activasScroll');
-  const keys   = Object.keys(comandas);
-
-  wrap.style.display = keys.length ? 'block' : 'none';
-  scroll.innerHTML = '';
-
-  keys.forEach(num => {
-    const btn = document.getElementById(`mesa-${num}`);
-    let estadoCls = 'ocupada';
-    if (btn?.classList.contains('preparando')) estadoCls = 'preparando';
-    if (btn?.classList.contains('listo'))      estadoCls = 'listo';
-
-    const chip = document.createElement('button');
-    chip.className = `activa-chip ${num == mesaActual ? 'activo' : ''}`;
-    chip.innerHTML = `<span class="chip-estado ${estadoCls}"></span>Mesa ${num}`;
-    chip.onclick = () => {
-      mesaActual = parseInt(num);
-      renderActivas();
-      renderDrawer();
-      openDrawer();
-    };
-    scroll.appendChild(chip);
-  });
-}
-
-// ─── MENÚ ─────────────────────────────────
-async function cargarMenu() {
-  try {
-    const res  = await fetch(API.menu);
-    const data = await res.json();
-    renderMenu(data.categorias);
-    document.getElementById('cartaStatus').textContent = `${data.categorias.length} categorías`;
-  } catch(e) {
-    renderMenu(MENU_DEMO.categorias);
-    document.getElementById('cartaStatus').textContent = 'Demo';
-  }
-}
-
-function renderMenu(cats) {
-  const container = document.getElementById('menuContainer');
-  container.innerHTML = '';
-  cats.forEach((cat, idx) => {
-    const block  = document.createElement('div');
-    block.className = 'cat-block';
-
-    const header = document.createElement('button');
-    header.className = 'cat-header' + (idx === 0 ? ' open' : '');
-    header.innerHTML = `
-      <span class="cat-name">${cat.titulo}</span>
-      <span class="cat-count">${cat.productos.length}</span>
-      <span class="cat-arrow">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </span>`;
-
-    const body  = document.createElement('div');
-    body.className = 'cat-body' + (idx === 0 ? ' open' : '');
-    const inner = document.createElement('div');
-    inner.className = 'cat-inner';
-
-    cat.productos.forEach(prod => {
-      const card = document.createElement('button');
-      card.className = 'prod-card';
-      card.innerHTML = `
-        <div class="prod-info">
-          <div class="prod-nombre">${prod.nombre}</div>
-          <div class="prod-precio">$${prod.precio.toLocaleString('es-CL')}</div>
+    <!-- Header Minimalista -->
+    <header class="fixed top-0 inset-x-0 z-50 px-6 py-4">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div>
+                <span class="font-display text-3xl text-premium-dark tracking-tighter">Sikdorak</span>
+                <div class="h-1 w-8 bg-premium-accent rounded-full"></div>
+            </div>
+            <div id="statusIndicator" class="glass-card px-4 py-2 rounded-2xl flex items-center gap-2">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Live Server</span>
+            </div>
         </div>
-        <div class="add-btn">+</div>`;
-      card.onclick = () => agregarItem(prod, card);
-      inner.appendChild(card);
-    });
+    </header>
 
-    body.appendChild(inner);
-    header.onclick = () => {
-      const open = body.classList.contains('open');
-      body.classList.toggle('open', !open);
-      header.classList.toggle('open', !open);
-    };
+    <main class="max-w-xl mx-auto px-6 pt-24 pb-40">
+        
+        <!-- Sección de Mesas: Ahora como un Grid elegante -->
+        <section class="mb-10">
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="font-extrabold text-sm uppercase tracking-[0.2em] text-slate-400">Salón Principal</h2>
+                <span class="text-xs font-medium text-slate-400" id="countMesas">20 Mesas</span>
+            </div>
+            <div id="mesasContainer" class="grid grid-cols-4 gap-3">
+                <!-- Las mesas se inyectan aquí -->
+            </div>
+        </section>
 
-    block.appendChild(header);
-    block.appendChild(body);
-    container.appendChild(block);
-  });
-}
+        <!-- Mesas que el Garzón está atendiendo (Burbujas) -->
+        <section id="comandasActivasContainer" class="mb-10 hidden">
+            <h2 class="font-extrabold text-[10px] uppercase tracking-[0.2em] text-indigo-500 mb-4">Mis Atenciones Activas</h2>
+            <div id="listaComandasAbiertas" class="flex gap-3 overflow-x-auto pb-2 custom-scroll"></div>
+        </section>
 
-// ─── AGREGAR ITEM ─────────────────────────
-function agregarItem(prod, card) {
-  if (!mesaActual) { showToast('Selecciona una mesa primero', 'error'); return; }
-  if (!comandas[mesaActual]) { showToast('Abre la mesa primero', 'error'); return; }
+        <!-- Menú de Productos -->
+        <section>
+            <h2 class="font-extrabold text-sm uppercase tracking-[0.2em] text-slate-400 mb-6 italic">Selección de Carta</h2>
+            <div id="menu" class="space-y-4">
+                <!-- Categorías y productos aquí -->
+            </div>
+        </section>
+    </main>
 
-  const comanda = comandas[mesaActual];
-  const existe  = comanda.items.find(i => i.nombre === prod.nombre);
-  if (existe) existe.cantidad++;
-  else comanda.items.push({ nombre: prod.nombre, precio: prod.precio, cantidad: 1, nota: '' });
-  persistir();
-  actualizarFAB();
-
-  card.classList.add('flash', 'added');
-  card.querySelector('.add-btn').textContent = '✓';
-  setTimeout(() => {
-    card.classList.remove('flash', 'added');
-    card.querySelector('.add-btn').textContent = '+';
-  }, 700);
-
-  if (document.getElementById('drawer').classList.contains('open')) renderDrawer();
-}
-
-// ─── FAB ──────────────────────────────────
-function actualizarFAB() {
-  const fab   = document.getElementById('fabWrap');
-  const badge = document.getElementById('fabBadge');
-  const mesa  = document.getElementById('fabMesa');
-  const total = document.getElementById('fabTotal');
-  const keys  = Object.keys(comandas);
-
-  if (!keys.length) { fab.style.display = 'none'; return; }
-
-  const num = mesaActual && comandas[mesaActual] ? mesaActual : parseInt(keys[0]);
-  const c   = comandas[num];
-  if (!c) { fab.style.display = 'none'; return; }
-
-  const tot = calcTotal(c.items);
-  const cnt = calcCount(c.items);
-
-  fab.style.display = 'block';
-  badge.textContent = cnt;
-  mesa.textContent  = `Mesa ${num}`;
-  total.textContent = `$${tot.toLocaleString('es-CL')}`;
-}
-
-function calcTotal(items) { return items.reduce((s,i) => s + i.precio * i.cantidad, 0); }
-function calcCount(items) { return items.reduce((s,i) => s + i.cantidad, 0); }
-
-// ─── DRAWER ───────────────────────────────
-function openDrawer() {
-  // Si mesaActual no está seteado, usar la primera comanda disponible
-  if (!mesaActual || !comandas[mesaActual]) {
-    const keys = Object.keys(comandas);
-    if (keys.length) mesaActual = parseInt(keys[0]);
-    else return; // No hay nada que mostrar
-  }
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('overlay').classList.add('visible');
-  renderDrawer();
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('overlay').classList.remove('visible');
-}
-
-function renderDrawer() {
-  if (!mesaActual || !comandas[mesaActual]) return;
-  const c = comandas[mesaActual];
-
-  document.getElementById('drawerTitle').textContent = `Mesa ${mesaActual}`;
-  document.getElementById('drawerMeta').innerHTML = `
-    <span class="meta-tag tipo">${c.tipo}</span>
-    <span class="meta-tag garzon">${c.garzon}</span>`;
-
-  const list  = document.getElementById('cartList');
-  const empty = document.getElementById('cartEmpty');
-  list.innerHTML = '';
-
-  if (c.items.length === 0) {
-    empty.style.display = 'block';
-    list.style.display  = 'none';
-  } else {
-    empty.style.display = 'none';
-    list.style.display  = 'block';
-    c.items.forEach((item, idx) => {
-      const li = document.createElement('li');
-      li.className = 'cart-item';
-      li.innerHTML = `
-        <div class="ci-info">
-          <div class="ci-nombre">${item.nombre}</div>
-          <div>
-            <span class="ci-precio">$${(item.precio * item.cantidad).toLocaleString('es-CL')}</span>
-            <button class="ci-nota-btn" onclick="editarNota(${idx})">Nota</button>
-          </div>
-          ${item.nota ? `<span class="ci-nota">★ ${item.nota}</span>` : ''}
+    <!-- Botón Flotante de Carrito (The Vault) -->
+    <div id="btnAbrirComanda" onclick="toggleComanda()" style="display: none;" 
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-md">
+        <div class="bg-premium-dark text-white p-5 rounded-[2.5rem] flex justify-between items-center shadow-[0_20px_50px_rgba(15,23,42,0.3)] border border-slate-700 active:scale-95 transition-transform cursor-pointer">
+            <div class="flex items-center gap-4">
+                <div class="relative bg-white/10 w-12 h-12 rounded-2xl flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    <span id="contadorBadge" class="absolute -top-2 -right-2 bg-indigo-500 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full ring-2 ring-premium-dark">0</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Revisar Pedido</p>
+                    <p id="mesaActivaBadge" class="text-xs font-bold">Mesa --</p>
+                </div>
+            </div>
+            <p id="totalFlotante" class="text-3xl font-display italic tracking-tighter pr-4">$0</p>
         </div>
-        <div class="qty-ctrl">
-          <button class="qty-btn" onclick="cambiarCant(${idx},-1)">−</button>
-          <span class="qty-num">${item.cantidad}</span>
-          <button class="qty-btn" onclick="cambiarCant(${idx},1)">+</button>
-        </div>`;
-      list.appendChild(li);
-    });
-  }
+    </div>
 
-  document.getElementById('drawerTotal').textContent = `$${calcTotal(c.items).toLocaleString('es-CL')}`;
-  document.getElementById('notaGeneral').value = c.notaGeneral || '';
-  actualizarFAB();
-  renderActivas();
-}
+    <!-- Overlay de Fondo -->
+    <div id="overlay" onclick="toggleComanda()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[65] hidden transition-opacity duration-500"></div>
 
-function cambiarCant(idx, delta) {
-  const items = comandas[mesaActual].items;
-  items[idx].cantidad += delta;
-  if (items[idx].cantidad <= 0) items.splice(idx, 1);
-  persistir();
-  renderDrawer();
-}
+    <!-- Panel Lateral de Comanda (Drawer) -->
+    <aside id="panelComanda" class="fixed inset-y-0 right-0 z-[70] w-full max-w-sm bg-white shadow-2xl transform translate-x-full flex flex-col">
+        <div class="p-8 flex-1 overflow-y-auto custom-scroll">
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <h3 id="pedidoMesaTitulo" class="font-display text-5xl italic text-premium-dark">Mesa --</h3>
+                    <p id="detallesServicio" class="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-2"></p>
+                </div>
+                <button onclick="toggleComanda()" class="text-slate-300 hover:text-slate-900 transition-colors">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
 
-async function editarNota(idx) {
-  const item = comandas[mesaActual].items[idx];
-  const { value, isConfirmed } = await Swal.fire({
-    title: item.nombre,
-    input: 'text',
-    inputValue: item.nota || '',
-    inputPlaceholder: 'Ej: Sin sal, término medio…',
-    confirmButtonText: 'Guardar',
-    confirmButtonColor: '#1A1916',
-    showCancelButton: true,
-    cancelButtonText: 'Cancelar',
-  });
-  if (isConfirmed) { item.nota = value || ''; persistir(); renderDrawer(); }
-}
+            <div class="mb-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Detalle de Consumo</p>
+                <ul id="pedidoLista" class="space-y-6">
+                    <!-- Items de la comanda -->
+                </ul>
+            </div>
 
-document.getElementById('notaGeneral').addEventListener('input', function() {
-  if (mesaActual && comandas[mesaActual]) {
-    comandas[mesaActual].notaGeneral = this.value;
-    persistir();
-  }
-});
+            <div class="mb-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Instrucciones Especiales</p>
+                <textarea id="notasGenerales" oninput="guardarNotaGeneral(this.value)" 
+                    class="w-full h-24 bg-slate-50 rounded-2xl p-4 text-sm font-medium outline-none border border-transparent focus:border-indigo-100 transition-all resize-none" 
+                    placeholder="Ej: Sin cebolla, al término..."></textarea>
+            </div>
+        </div>
 
-// ─── ENVIAR A COCINA ──────────────────────
-async function enviarACocina() {
-  const c = comandas[mesaActual];
-  if (!c || c.items.length === 0) { showToast('Agrega al menos un plato', 'error'); return; }
+        <div class="p-8 bg-slate-50 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6 px-2">
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">Total Estimado</span>
+                <span id="totalCuenta" class="text-4xl font-display italic text-premium-dark">$0</span>
+            </div>
+            <button id="enviarBtn" class="w-full bg-premium-dark text-white py-6 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl active:scale-[0.98] transition-all">
+                Enviar a Cocina
+            </button>
+        </div>
+    </aside>
 
-  const btn = document.getElementById('sendBtn');
-  btn.disabled = true;
-  btn.innerHTML = `<span style="animation:spin .8s linear infinite;display:inline-block">↻</span> Enviando…`;
-
-  try {
-    const res  = await fetch(API.guardar, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        mesa:         mesaActual,
-        tipo:         c.tipo,
-        garzon:       c.garzon,
-        nota_general: c.notaGeneral || '',
-        productos:    c.items,
-      }),
-    });
-    const data = await res.json();
-    if (data.status !== 'ok') throw new Error(data.message || 'Error');
-
-    imprimirTicket(c);
-
-    // Limpiar items pero mantener la mesa activa
-    comandas[mesaActual].items       = [];
-    comandas[mesaActual].notaGeneral = '';
-    persistir();
-    closeDrawer();
-    sincronizarMesas();
-    renderActivas();
-    actualizarFAB();
-    showToast('¡Pedido enviado a cocina!', 'success');
-
-  } catch(e) {
-    showToast('Error al enviar. Reintenta.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;flex-shrink:0">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-      </svg>
-      Enviar a cocina`;
-  }
-}
-
-// ─── LIBERAR MESA ─────────────────────────
-async function liberarMesa() {
-  const num = mesaActual;
-  const { isConfirmed } = await Swal.fire({
-    title: `¿Cerrar Mesa ${num}?`,
-    text: 'Se liberará la mesa para nuevos clientes.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#E63946',
-    confirmButtonText: 'Sí, liberar',
-    cancelButtonText: 'Cancelar',
-  });
-  if (!isConfirmed) return;
-
-  try {
-    await fetch(API.finalizar, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ mesa: num }),
-    });
-  } catch(e) {}
-
-  delete comandas[num];
-  persistir();
-  mesaActual = null;
-  closeDrawer();
-  aplicarEstadoMesa(num, 'disponible');
-  renderActivas();
-  actualizarFAB();
-  showToast(`Mesa ${num} liberada`, 'info');
-}
-
-// ─── IMPRESIÓN ────────────────────────────
-function imprimirTicket(c) {
-  const hora = new Date().toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('tk-mesa').textContent   = `Mesa ${mesaActual}`;
-  document.getElementById('tk-hora').textContent   = hora;
-  document.getElementById('tk-garzon').textContent = c.garzon;
-  document.getElementById('tk-tipo').textContent   = c.tipo;
-  document.getElementById('tk-items').innerHTML    = c.items.map(i => `
-    <div class="tk-item">
-      <div class="tk-item-name">${i.cantidad}x ${i.nombre}</div>
-      ${i.nota ? `<div class="tk-item-nota">* ${i.nota}</div>` : ''}
-    </div>`).join('');
-  document.getElementById('tk-nota').textContent = c.notaGeneral ? `Nota: ${c.notaGeneral}` : '';
-  window.print();
-}
-
-// ─── SPIN ─────────────────────────────────
-document.head.insertAdjacentHTML('beforeend', '<style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
-
-// ─── MENÚ DEMO ────────────────────────────
-const MENU_DEMO = {
-  categorias: [
-    { titulo:'Entradas', productos:[
-      {nombre:'Ceviche Clásico',precio:8900},{nombre:'Empanadas (x3)',precio:5500},
-      {nombre:'Tabla de Quesos',precio:12000},{nombre:'Bruschetta',precio:6500}
-    ]},
-    { titulo:'Platos de Fondo', productos:[
-      {nombre:'Lomo a la Plancha',precio:18500},{nombre:'Salmón al Horno',precio:19900},
-      {nombre:'Pasta Carbonara',precio:13500},{nombre:'Pollo al Limón',precio:14900},
-      {nombre:'Costillas BBQ',precio:22000}
-    ]},
-    { titulo:'Bebidas', productos:[
-      {nombre:'Agua Mineral',precio:2500},{nombre:'Jugo Natural',precio:4500},
-      {nombre:'Vino Copa',precio:6000},{nombre:'Cerveza Artesanal',precio:5500},
-      {nombre:'Coca-Cola',precio:3000}
-    ]},
-    { titulo:'Postres', productos:[
-      {nombre:'Tiramisú',precio:7500},{nombre:'Crème Brûlée',precio:7000},
-      {nombre:'Brownie c/ Helado',precio:6500}
-    ]}
-  ]
-};
-</script>
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>
